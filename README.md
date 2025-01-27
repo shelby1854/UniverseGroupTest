@@ -28,7 +28,7 @@ Manages dependency injection and provides scene creation methods for controllers
 Used for reactive data binding, ensuring that UI updates are synchronized with data changes.
 
 Future Improvements
-Networking: Replace mock data with real API calls.
-Unit Tests: Add tests for ViewModels and services using mock implementations.
-Localization: Add support for multiple languages.
-Animations: Enhance UI transitions and interactions with animations.
+- Networking: Replace mock data with real API calls.
+- Unit Tests: Add tests for ViewModels and services using mock implementations.
+- Localization: Add support for multiple languages.
+- Animations: Enhance UI transitions and interactions with animations.
