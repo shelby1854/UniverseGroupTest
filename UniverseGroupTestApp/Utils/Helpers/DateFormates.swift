@@ -6,7 +6,7 @@
 //
 
 enum DateFormates: String {
-    case `default` = "dd-MMM-yyyy"
-    case dayMonthYear = "dd MMM yyyy"
-    // other cases...
+  case `default` = "dd-MMM-yyyy"
+  case dayMonthYear = "dd MMM yyyy"
+  // other cases...
 }

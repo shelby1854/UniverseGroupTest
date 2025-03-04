@@ -7,30 +7,30 @@
 
 
 final class AppDIContainer {
-    // MARK: - Services
-    lazy var filmsService: FilmsServiceProtocol = {
-        FilmsService()
-    }()
+  // MARK: - Services
+  lazy var filmsService: FilmsServiceProtocol = {
+    FilmsService()
+  }()
+  
+  // MARK: - Scenes
+  func makeSplashScene() -> (view: SplashViewController, viewModel: SplashViewModel) {
+    let splashVM = SplashViewModel(filmsService: filmsService)
+    let splashVC = SplashViewController(viewModel: splashVM)
     
-    // MARK: - Scenes
-    func makeSplashScene() -> (view: SplashViewController, viewModel: SplashViewModel) {
-        let splashVM = SplashViewModel(filmsService: filmsService)
-        let splashVC = SplashViewController(viewModel: splashVM)
-        
-        return (splashVC, splashVM)
-    }
+    return (splashVC, splashVM)
+  }
+  
+  func makeFilmsScene() -> (view: FilmsViewController, viewModel: FilmsViewModel) {
+    let filmsVM = FilmsViewModel(filmsService: filmsService)
+    let filmsVC = FilmsViewController(viewModel: filmsVM)
     
-    func makeFilmsScene() -> (view: FilmsViewController, viewModel: FilmsViewModel) {
-        let filmsVM = FilmsViewModel(filmsService: filmsService)
-        let filmsVC = FilmsViewController(viewModel: filmsVM)
-        
-        return (filmsVC, filmsVM)
-    }
+    return (filmsVC, filmsVM)
+  }
+  
+  func makeFavoritesScene() -> (view: FavoritesViewController, viewModel: FavoritesViewModel) {
+    let favoritesFilmsVM = FavoritesViewModel(filmsService: filmsService)
+    let favoriteFilmsVC = FavoritesViewController(viewModel: favoritesFilmsVM)
     
-    func makeFavoritesScene() -> (view: FavoritesViewController, viewModel: FavoritesViewModel) {
-        let favoritesFilmsVM = FavoritesViewModel(filmsService: filmsService)
-        let favoriteFilmsVC = FavoritesViewController(viewModel: favoritesFilmsVM)
-        
-        return (favoriteFilmsVC, favoritesFilmsVM)
-    }
+    return (favoriteFilmsVC, favoritesFilmsVM)
+  }
 }

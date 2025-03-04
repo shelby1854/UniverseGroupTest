@@ -8,20 +8,20 @@
 import UIKit
 
 final class MainTabBarController: UITabBarController {
-    // MARK: - Lifecycle
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupNavigationBarAppearance()
-    }
+  // MARK: - Lifecycle
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    setupNavigationBarAppearance()
+  }
+  
+  // MARK: - Setup
+  private func setupNavigationBarAppearance() {
+    let appearance = UINavigationBarAppearance()
+    appearance.configureWithOpaqueBackground()
+    appearance.backgroundColor = AppColor.MainTabBar.navigationBarBG
+    appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
     
-    // MARK: - Setup
-    private func setupNavigationBarAppearance() {
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = AppColor.MainTabBar.navigationBarBG
-        appearance.titleTextAttributes = [.foregroundColor: UIColor.white]
-        
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-    }
+    UINavigationBar.appearance().standardAppearance = appearance
+    UINavigationBar.appearance().scrollEdgeAppearance = appearance
+  }
 }
