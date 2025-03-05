@@ -9,6 +9,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import SnapKit
+import RxDataSources
 
 final class FilmsViewController: UIViewController {
   // MARK: - Properties
@@ -29,9 +30,41 @@ final class FilmsViewController: UIViewController {
       image: AppImage.Films.addToFavStar,
       style: .done,
       target: self,
-      action: #selector(addSelectedTapped)
+      action: nil
     )
     return button
+  }()
+  
+  private lazy var sortButton: UIBarButtonItem = {
+    let button = UIBarButtonItem(
+      title: "Sort",
+      style: .plain,
+      target: nil,
+      action: nil
+    )
+    return button
+  }()
+  
+  private lazy var dataSource: RxTableViewSectionedAnimatedDataSource<FilmSection> = {
+    let dataSource = RxTableViewSectionedAnimatedDataSource<FilmSection>(
+      configureCell: { [weak self] _, tableView, indexPath, film in
+        guard let self else { return UITableViewCell() }
+        let cell = tableView.dequeueReusableCell(
+          withIdentifier: FilmsTableViewCell.reuseIdentifier,
+          for: indexPath
+        ) as! FilmsTableViewCell
+        
+        cell.configure(
+          with: film,
+          isSelected: viewModel.isSelected(film),
+          showFavoriteIcon: true
+        )
+        return cell
+      }, titleForHeaderInSection: { dataSource, sectionIndex in
+        dataSource.sectionModels[sectionIndex].identity
+      }
+    )
+    return dataSource
   }()
   
   // MARK: - Init
@@ -60,22 +93,14 @@ final class FilmsViewController: UIViewController {
     tableView.snp.makeConstraints { make in
       make.edges.equalToSuperview()
     }
-    navigationItem.rightBarButtonItem = nil
-    tableView.delegate = self
+    navigationItem.rightBarButtonItems = [sortButton]
   }
   
   private func setupBindings() {
-    viewModel.output.films
-      .bind(to: tableView.rx.items(
-        cellIdentifier: FilmsTableViewCell.reuseIdentifier,
-        cellType: FilmsTableViewCell.self
-      )) { [weak self] index, film, cell in
-        guard let self else { return }
-        cell.configure(with: film, showFavoriteIcon: true)
-        cell.contentView.backgroundColor = self.viewModel.isSelected(film) ? AppColor.FilmCell.selectedCell : .clear
-      }
+    viewModel.output.sections
+      .bind(to: tableView.rx.items(dataSource: dataSource))
       .disposed(by: disposeBag)
-    
+
     tableView.rx.modelSelected(FilmBO.self)
       .subscribe(onNext: { [weak self] film in
         guard let self else { return }
@@ -84,24 +109,61 @@ final class FilmsViewController: UIViewController {
           self.showRemoveFavoriteAlert(for: film)
         } else {
           self.viewModel.input.selectFilm.onNext(film)
-          self.tableView.reloadData()
         }
       })
       .disposed(by: disposeBag)
     
-    viewModel.output.selectedFilms
-      .subscribe(onNext: { [weak self] selectedFilms in
+    addSelectedButton.rx.tap
+      .bind(to: viewModel.input.addSelected)
+      .disposed(by: disposeBag)
+    
+    sortButton.rx.tap
+      .bind(to: viewModel.input.toogleSort)
+      .disposed(by: disposeBag)
+    
+    Observable
+      .combineLatest(
+        viewModel.output.sections,
+        viewModel.output.selectedFilms
+      )
+      .scan((([], [] as [FilmBO]), ([], [] as [FilmBO]))) { previous, new in
+        (previous.1, new)
+      }
+      .subscribe(onNext: { [weak self] oldState, newState in
         guard let self else { return }
-        self.navigationItem.rightBarButtonItem = selectedFilms.isEmpty
-          ? nil
-          : self.addSelectedButton
+        
+        let (_, oldSelected) = oldState
+        let (newSections, newSelected) = newState
+        
+        if newSelected.isEmpty {
+          self.navigationItem.rightBarButtonItems = [self.sortButton]
+        } else {
+          self.navigationItem.rightBarButtonItems = [self.sortButton, self.addSelectedButton]
+        }
+        
+        let oldSelectedIds = Set(oldSelected.map { $0.id })
+        let newSelectedIds = Set(newSelected.map { $0.id })
+        let changedSelectedIds = oldSelectedIds.symmetricDifference(newSelectedIds)
+        
+        var indexPathsToReload: [IndexPath] = []
+        if let visiblePaths = self.tableView.indexPathsForVisibleRows {
+          for indexPath in visiblePaths {
+            guard indexPath.section < newSections.count,
+                  indexPath.row < newSections[indexPath.section].items.count
+            else { continue }
+            
+            let film = newSections[indexPath.section].items[indexPath.row]
+            if changedSelectedIds.contains(film.id) {
+              indexPathsToReload.append(indexPath)
+            }
+          }
+        }
+        
+        if !indexPathsToReload.isEmpty {
+          self.tableView.reloadRows(at: indexPathsToReload, with: .automatic)
+        }
       })
       .disposed(by: disposeBag)
-  }
-  
-  // MARK: - Actions
-  @objc private func addSelectedTapped() {
-    viewModel.input.addSelected.onNext(())
   }
   
   // MARK: - Helpers
@@ -117,23 +179,5 @@ final class FilmsViewController: UIViewController {
     }))
     alert.addAction(UIAlertAction(title: alertTexts.cancel, style: .cancel, handler: nil))
     present(alert, animated: true, completion: nil)
-  }
-}
-
-// MARK: - UITableViewDelegate (Swipe Actions)
-extension FilmsViewController: UITableViewDelegate {
-  func tableView(_ tableView: UITableView,
-                 trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
-  ) -> UISwipeActionsConfiguration? {
-    guard let film = try? tableView.rx.model(at: indexPath) as FilmBO else { return nil }
-    
-    let action = UIContextualAction(style: .normal, title: film.trailingActionTitle) { [weak self] _, _, _ in
-      self?.viewModel.toggleFavorite(for: film)
-    }
-    
-    action.backgroundColor = film.trailingActionBackgroundColor
-    
-    let config = UISwipeActionsConfiguration(actions: [action])
-    return config
   }
 }

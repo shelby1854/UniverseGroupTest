@@ -8,15 +8,18 @@
 import RxSwift
 import RxCocoa
 
+typealias FilmSection = AnimatableSection<FilmBO>
+
 final class FilmsViewModel {
   //MARK: - Nested Types
   struct Input {
     let selectFilm: AnyObserver<FilmBO>
     let addSelected: AnyObserver<Void>
+    let toogleSort: AnyObserver<Void>
   }
   
   struct Output {
-    let films: Observable<[FilmBO]>
+    let sections: Observable<[FilmSection]>
     let selectedFilms: Observable<[FilmBO]>
   }
   
@@ -30,27 +33,46 @@ final class FilmsViewModel {
   
   private let selectFilmSubject = PublishSubject<FilmBO>()
   private let addSelectedSubject = PublishSubject<Void>()
+  private let toggleSortSubject = PublishSubject<Void>()
  
   private let selectedFilmsRelay = BehaviorRelay<[FilmBO]>(value: [])
+  private let isSortedRelay = BehaviorRelay<Bool>(value: false)
   
   // MARK: - Init
   init(filmsService: FilmsServiceProtocol) {
     self.filmsService = filmsService
     
-    let films = filmsService.films
+    let allFilms = filmsService.films
+    
+    let sections = Observable
+      .combineLatest(allFilms, isSortedRelay)
+      .map { films, isSorted -> [FilmSection] in
+        if isSorted {
+          let favorites = films.filter { $0.isFavorite }
+          let others = films.filter { !$0.isFavorite }
+          
+          return [
+            FilmSection(uniqueId: "Favorires", items: favorites),
+            FilmSection(uniqueId: "Others", items: others)
+          ]
+        } else {
+          return [
+            FilmSection(uniqueId: "All", items: films)
+          ]
+        }
+      }
+    
     let selectedFilms = selectedFilmsRelay.asObservable()
     
     output = Output(
-      films: films,
+      sections: sections,
       selectedFilms: selectedFilms
     )
     
-    let selectedFilmObserver: AnyObserver<FilmBO> = selectFilmSubject.asObserver()
-    let addSelectedObserver: AnyObserver<Void> = addSelectedSubject.asObserver()
-    
     input = Input(
-      selectFilm: selectedFilmObserver,
-      addSelected: addSelectedObserver
+      selectFilm: selectFilmSubject.asObserver(),
+      addSelected: addSelectedSubject.asObserver(),
+      toogleSort: toggleSortSubject.asObserver()
     )
     
     setupBindings()
@@ -58,6 +80,13 @@ final class FilmsViewModel {
   
   //MARK: - Private
   private func setupBindings() {
+    toggleSortSubject
+      .subscribe(onNext: { [weak self] in
+        guard let self else { return }
+        self.isSortedRelay.accept(!self.isSortedRelay.value)
+      })
+      .disposed(by: disposeBag)
+    
     selectFilmSubject
       .subscribe(onNext: { [weak self] film in
         self?.toggleSelection(for: film)

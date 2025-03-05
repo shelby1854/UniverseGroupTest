@@ -86,12 +86,14 @@ final class FilmsTableViewCell: UITableViewCell {
   }
   
   // MARK: - Configuration
-  func configure(with film: FilmBO, showFavoriteIcon: Bool = false) {
+  func configure(with film: FilmBO, isSelected: Bool, showFavoriteIcon: Bool = false) {
     titleLabel.text = film.title
     descriptionLabel.text = film.description
     releaseDateLabel.text = formatDate(film.releaseDate)
     favoriteImageView.isHidden = !showFavoriteIcon
     favoriteImageView.image = film.isFavorite ? AppImage.FilmCell.fillSquare : AppImage.FilmCell.square
+    contentView.backgroundColor = isSelected ? AppColor.FilmCell.selectedCell : .clear
+
     selectionStyle = .none
   }
   

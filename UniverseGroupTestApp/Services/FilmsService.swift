@@ -43,10 +43,15 @@ extension FilmsService: FilmsServiceProtocol {
   }
   
   func toggleFavorites(for films: [FilmBO]) {
-    films.forEach {
-      $0.isFavorite.toggle()
+    let updatedFilms = filmsRelay.value.map { film in
+      if films.contains(where: { $0.id == film.id }) {
+        var modifiedFilm = film
+        modifiedFilm.isFavorite.toggle()
+        return modifiedFilm
+      }
+      return film
     }
-    
-    filmsRelay.accept(filmsRelay.value)
+
+    filmsRelay.accept(updatedFilms)
   }
 }

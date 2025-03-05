@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class FilmBO {
+struct FilmBO {
   let id: UUID
   let title: String
   let description: String
@@ -24,12 +24,26 @@ final class FilmBO {
   }
 }
 
+extension FilmBO: IdentifiableItem {
+  var identity: UUID { id }
+  
+  static func == (lhs: FilmBO, rhs: FilmBO) -> Bool {
+    return lhs.id == rhs.id
+    && lhs.title == rhs.title
+    && lhs.description == rhs.description
+    && lhs.releaseDate == rhs.releaseDate
+    && lhs.isFavorite == rhs.isFavorite
+  }
+}
+
 extension FilmBO {
   var trailingActionTitle: String {
     isFavorite ? "Unfavorite" : "Favorite"
   }
   
   var trailingActionBackgroundColor: UIColor {
-    isFavorite ? AppColor.FilmCell.removeFromFavActionBG : AppColor.FilmCell.addToFavActionBG
+    isFavorite
+    ? AppColor.FilmCell.removeFromFavActionBG
+    : AppColor.FilmCell.addToFavActionBG
   }
 }

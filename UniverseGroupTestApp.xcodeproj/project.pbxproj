@@ -37,6 +37,10 @@
 		F42706A82D7738C300D0DBC2 /* FilmsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42706A72D7738B700D0DBC2 /* FilmsCoordinator.swift */; };
 		F42706AA2D7738CD00D0DBC2 /* FavoritesCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42706A92D7738C700D0DBC2 /* FavoritesCoordinator.swift */; };
 		F42706B12D78281600D0DBC2 /* FavoritesViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42706B02D78281600D0DBC2 /* FavoritesViewModel.swift */; };
+		F42706B32D784C8A00D0DBC2 /* AnimatableSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42706B22D784C8900D0DBC2 /* AnimatableSection.swift */; };
+		F42706B92D78647300D0DBC2 /* Differentiator in Frameworks */ = {isa = PBXBuildFile; productRef = F42706B82D78647300D0DBC2 /* Differentiator */; };
+		F42706BB2D78647300D0DBC2 /* RxDataSources in Frameworks */ = {isa = PBXBuildFile; productRef = F42706BA2D78647300D0DBC2 /* RxDataSources */; };
+		F42706BD2D78651200D0DBC2 /* FilmSectionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F42706BC2D78650D00D0DBC2 /* FilmSectionModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -82,6 +86,8 @@
 		F42706A72D7738B700D0DBC2 /* FilmsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmsCoordinator.swift; sourceTree = "<group>"; };
 		F42706A92D7738C700D0DBC2 /* FavoritesCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesCoordinator.swift; sourceTree = "<group>"; };
 		F42706B02D78281600D0DBC2 /* FavoritesViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesViewModel.swift; sourceTree = "<group>"; };
+		F42706B22D784C8900D0DBC2 /* AnimatableSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimatableSection.swift; sourceTree = "<group>"; };
+		F42706BC2D78650D00D0DBC2 /* FilmSectionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilmSectionModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,7 +96,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				CBD760FD2D453B4A00EDC4DF /* RxRelay in Frameworks */,
+				F42706B92D78647300D0DBC2 /* Differentiator in Frameworks */,
 				CBD760F92D453B4A00EDC4DF /* RxCocoa in Frameworks */,
+				F42706BB2D78647300D0DBC2 /* RxDataSources in Frameworks */,
 				CBD761082D453C4300EDC4DF /* SnapKit in Frameworks */,
 				CBD760F52D453B4A00EDC4DF /* RxBlocking in Frameworks */,
 			);
@@ -114,6 +122,7 @@
 			children = (
 				CBD7615D2D467EFF00EDC4DF /* Extensions */,
 				CBD761602D467F6900EDC4DF /* Helpers */,
+				F42706B42D784DA000D0DBC2 /* UITableView */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -286,6 +295,15 @@
 			name = "Recovered References";
 			sourceTree = "<group>";
 		};
+		F42706B42D784DA000D0DBC2 /* UITableView */ = {
+			isa = PBXGroup;
+			children = (
+				F42706BC2D78650D00D0DBC2 /* FilmSectionModel.swift */,
+				F42706B22D784C8900D0DBC2 /* AnimatableSection.swift */,
+			);
+			path = UITableView;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -308,6 +326,8 @@
 				CBD760F82D453B4A00EDC4DF /* RxCocoa */,
 				CBD760FC2D453B4A00EDC4DF /* RxRelay */,
 				CBD761072D453C4300EDC4DF /* SnapKit */,
+				F42706B82D78647300D0DBC2 /* Differentiator */,
+				F42706BA2D78647300D0DBC2 /* RxDataSources */,
 			);
 			productName = UniverseGroupTestApp;
 			productReference = CBD760D52D45382700EDC4DF /* UniverseGroupTestApp.app */;
@@ -340,6 +360,7 @@
 			packageReferences = (
 				CBD760F32D4539B900EDC4DF /* XCRemoteSwiftPackageReference "RxSwift" */,
 				CBD761062D453C4300EDC4DF /* XCRemoteSwiftPackageReference "SnapKit" */,
+				F42706B72D78647300D0DBC2 /* XCRemoteSwiftPackageReference "RxDataSources" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = CBD760D62D45382700EDC4DF /* Products */;
@@ -369,6 +390,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CBD7613E2D45407B00EDC4DF /* AppCoordinator.swift in Sources */,
+				F42706BD2D78651200D0DBC2 /* FilmSectionModel.swift in Sources */,
 				CBD761622D467F7600EDC4DF /* DateFormates.swift in Sources */,
 				CBD7613F2D45407B00EDC4DF /* FilmDTO.swift in Sources */,
 				CBD761402D45407B00EDC4DF /* FilmsService.swift in Sources */,
@@ -376,6 +398,7 @@
 				F42706A62D77122400D0DBC2 /* TabBarCoordinator.swift in Sources */,
 				CBD761412D45407B00EDC4DF /* AppDelegate.swift in Sources */,
 				CBD761422D45407B00EDC4DF /* FavoritesViewController.swift in Sources */,
+				F42706B32D784C8A00D0DBC2 /* AnimatableSection.swift in Sources */,
 				F42706A82D7738C300D0DBC2 /* FilmsCoordinator.swift in Sources */,
 				CBD761442D45407B00EDC4DF /* FilmsViewController.swift in Sources */,
 				F42706B12D78281600D0DBC2 /* FavoritesViewModel.swift in Sources */,
@@ -622,6 +645,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		F42706B72D78647300D0DBC2 /* XCRemoteSwiftPackageReference "RxDataSources" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RxSwiftCommunity/RxDataSources";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -644,6 +675,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CBD761062D453C4300EDC4DF /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		F42706B82D78647300D0DBC2 /* Differentiator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F42706B72D78647300D0DBC2 /* XCRemoteSwiftPackageReference "RxDataSources" */;
+			productName = Differentiator;
+		};
+		F42706BA2D78647300D0DBC2 /* RxDataSources */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F42706B72D78647300D0DBC2 /* XCRemoteSwiftPackageReference "RxDataSources" */;
+			productName = RxDataSources;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

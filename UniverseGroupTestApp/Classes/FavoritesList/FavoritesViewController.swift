@@ -102,8 +102,8 @@ final class FavoritesViewController: UIViewController {
         cellType: FilmsTableViewCell.self
       )) { [weak self] _, film, cell in
         guard let self else { return }
-        cell.configure(with: film)
-        cell.contentView.backgroundColor = self.viewModel.isSelected(film) ? AppColor.FilmCell.selectedCell : .clear
+        let isSelected = viewModel.isSelected(film)
+        cell.configure(with: film, isSelected: isSelected)
       }
       .disposed(by: disposeBag)
     
