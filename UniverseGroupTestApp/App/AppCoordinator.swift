@@ -16,7 +16,21 @@ final class AppCoordinator: BaseCoordinator<Void> {
   }
   
   override func start() -> Observable<Void> {
-    let splashCoordinator = SplashCoordinator(window: window)
+    let filmsService = FilmsService()
+    let splashCoordinator = SplashCoordinator(
+      window: window,
+      filmsService: filmsService
+    )
     return coordinate(to: splashCoordinator)
+      .take(1)
+      .flatMap { [weak self] _ -> Observable<Void> in
+        guard let self else { return .empty() }
+        
+        let tabBarCoordinator = TabBarCoordinator(
+          window: window,
+          filmsService: filmsService
+        )
+        return coordinate(to: tabBarCoordinator)
+      }
   }
 }

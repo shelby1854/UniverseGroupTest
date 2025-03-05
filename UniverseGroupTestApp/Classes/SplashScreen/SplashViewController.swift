@@ -46,9 +46,7 @@ final class SplashViewController: UIViewController {
     view.backgroundColor = AppColor.Common.mainBG
     setupUI()
     setupBindings()
-    
     activityIndicator.startAnimating()
-    viewModel.startLoading()
   }
   
   // MARK: - Setup
@@ -67,7 +65,7 @@ final class SplashViewController: UIViewController {
   
   private func setupBindings() {
     viewModel.output.loadingText
-      .drive(loadingLabel.rx.text)
+      .bind(to: loadingLabel.rx.text)
       .disposed(by: disposeBag)
   }
 }

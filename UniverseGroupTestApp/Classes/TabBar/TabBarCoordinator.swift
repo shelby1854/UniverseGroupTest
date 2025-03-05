@@ -10,30 +10,50 @@ import RxSwift
 
 final class TabBarCoordinator: BaseCoordinator<Void> {
   private let window: UIWindow
-  
-  init(window: UIWindow) {
+  private let filmsService: FilmsServiceProtocol
+
+  init(window: UIWindow, filmsService: FilmsServiceProtocol) {
     self.window = window
+    self.filmsService = filmsService
   }
   
   override func start() -> Observable<Void> {
     let tabBarController = TabBarController()
     
-    let filmsVC = UIViewController()
-    filmsVC.tabBarItem = UITabBarItem(
+    let filmsNav = UINavigationController()
+    filmsNav.tabBarItem = UITabBarItem(
       title: "Films",
       image: AppImage.MainTabBar.filmsLogo,
       tag: 0
     )
     
-    let settingsVC = UIViewController()
-    settingsVC.tabBarItem = UITabBarItem(
+    let filmsCoordinator = FilmsCoordinator(
+      navigationController: filmsNav,
+      filmsService: filmsService
+    )
+    
+    coordinate(to: filmsCoordinator)
+      .subscribe()
+      .disposed(by: disposeBag)
+    
+    let favoritesNav = UINavigationController()
+    favoritesNav.tabBarItem = UITabBarItem(
       title: "Favorites",
       image: AppImage.MainTabBar.favsLogo,
       tag: 1
     )
     
-    tabBarController.viewControllers = [filmsVC, settingsVC]
+    let favoritesCoordinator = FavoritesCoordinator(
+      navigationController: favoritesNav,
+      filmsService: filmsService
+    )
     
+    coordinate(to: favoritesCoordinator)
+      .subscribe()
+      .disposed(by: disposeBag)
+    
+    tabBarController.viewControllers = [filmsNav, favoritesNav]
+
     window.rootViewController = tabBarController
     window.makeKeyAndVisible()
     return .never()

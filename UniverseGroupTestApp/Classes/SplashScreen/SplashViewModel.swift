@@ -11,12 +11,10 @@ import RxCocoa
 
 final class SplashViewModel {
   // MARK: - Nested Types
-  struct Input {
-    
-  }
+  struct Input {}
   struct Output {
-    let loadingText: Driver<String>
-    let loadingFinished: Driver<Void>
+    let loadingText: Observable<String>
+    let loadingFinished: Observable<FilmsLoadingResult>
   }
   
   // MARK: - Public Properties
@@ -26,16 +24,16 @@ final class SplashViewModel {
   // MARK: - Private
   private let disposeBag = DisposeBag()
   private let filmsService: FilmsServiceProtocol
-  private let finishLoadingSubject = PublishSubject<Void>()
-
+  private let finishLoadingSubject = PublishSubject<FilmsLoadingResult>()
+  
   // MARK: - Init
-  init(filmsService: FilmsServiceProtocol = FilmsService()) {
+  init(filmsService: FilmsServiceProtocol) {
     self.filmsService = filmsService
     
     input = Input()
     
-    let loadingText = Driver.just("Loading films...")
-    let finishLoading = finishLoadingSubject.asDriver(onErrorDriveWith: .empty())
+    let loadingText = Observable.just("Loading films...")
+    let finishLoading = finishLoadingSubject.asObservable()
     
     output = Output(
       loadingText: loadingText,
@@ -47,8 +45,13 @@ final class SplashViewModel {
   
   func startLoading() {
     // Network request imitation
-    DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
-      self.filmsService.loadData()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+      let success = Bool.random()
+      if success {
+        self.filmsService.loadData()
+      } else {
+        self.finishLoadingSubject.onNext(.error)
+      }
     }
   }
 }
@@ -57,8 +60,8 @@ final class SplashViewModel {
 private extension SplashViewModel {
   func observeFilms() {
     filmsService.films
-      .subscribe(onNext: { [weak self] films in
-        self?.finishLoadingSubject.onNext(())
+      .subscribe(onNext: { [weak self] _ in
+        self?.finishLoadingSubject.onNext(.success)
       }, onError: { error in
         print("Failed to load films: \(error)")
       })
