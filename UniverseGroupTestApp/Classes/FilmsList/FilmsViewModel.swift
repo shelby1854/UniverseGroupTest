@@ -7,6 +7,7 @@
 
 import RxSwift
 import RxCocoa
+import Foundation
 
 typealias FilmSection = AnimatableSection<FilmBO>
 
@@ -16,6 +17,7 @@ final class FilmsViewModel {
     let selectFilm: AnyObserver<FilmBO>
     let addSelected: AnyObserver<Void>
     let toogleSort: AnyObserver<Void>
+    let randomizeTitle: AnyObserver<Void>
   }
   
   struct Output {
@@ -34,7 +36,8 @@ final class FilmsViewModel {
   private let selectFilmSubject = PublishSubject<FilmBO>()
   private let addSelectedSubject = PublishSubject<Void>()
   private let toggleSortSubject = PublishSubject<Void>()
- 
+  private let randomTitelSubject = PublishSubject<Void>()
+
   private let selectedFilmsRelay = BehaviorRelay<[FilmBO]>(value: [])
   private let isSortedRelay = BehaviorRelay<Bool>(value: false)
   
@@ -72,7 +75,8 @@ final class FilmsViewModel {
     input = Input(
       selectFilm: selectFilmSubject.asObserver(),
       addSelected: addSelectedSubject.asObserver(),
-      toogleSort: toggleSortSubject.asObserver()
+      toogleSort: toggleSortSubject.asObserver(),
+      randomizeTitle: randomTitelSubject.asObserver()
     )
     
     setupBindings()
@@ -98,6 +102,12 @@ final class FilmsViewModel {
         self?.addSelectedToFavorites()
       })
       .disposed(by: disposeBag)
+    
+    randomTitelSubject
+      .subscribe(onNext: { [weak self] in
+        self?.randomizeTitleForRandomFilm()
+      })
+      .disposed(by: disposeBag)
   }
   
   private func toggleSelection(for film: FilmBO) {
@@ -116,6 +126,28 @@ final class FilmsViewModel {
     let selected = selectedFilmsRelay.value
     filmsService.toggleFavorites(for: selected)
     selectedFilmsRelay.accept([])
+  }
+  
+  private func randomizeTitleForRandomFilm() {
+    var films = filmsService.filmsValue
+    guard !films.isEmpty else { return }
+    
+    let randomIndex = Int.random(in: 0..<films.count)
+    
+    let oldFilm = films[randomIndex]
+    films.remove(at: randomIndex)
+    
+    var updatedFilm = oldFilm
+    if !updatedFilm.title.contains("Watched") {
+      updatedFilm.title += " Watched"
+    } else {
+      updatedFilm.title = updatedFilm.title.replacingOccurrences(of: " Watched", with: "")
+    }
+    updatedFilm.id = UUID()
+    
+    films.insert(updatedFilm, at: randomIndex)
+    
+    filmsService.updateAllFilms(films)
   }
   
   //MARK: - Public

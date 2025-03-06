@@ -15,6 +15,7 @@ protocol FilmsServiceProtocol: AnyObject {
   
   func loadData()
   func toggleFavorites(for films: [FilmBO])
+  func updateAllFilms(_ films: [FilmBO])
 }
 
 final class FilmsService {
@@ -53,5 +54,9 @@ extension FilmsService: FilmsServiceProtocol {
     }
 
     filmsRelay.accept(updatedFilms)
+  }
+  
+  func updateAllFilms(_ films: [FilmBO]) {
+    filmsRelay.accept(films)
   }
 }

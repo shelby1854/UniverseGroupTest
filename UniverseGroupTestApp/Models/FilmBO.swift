@@ -8,8 +8,8 @@
 import UIKit
 
 struct FilmBO {
-  let id: UUID
-  let title: String
+  var id: UUID
+  var title: String
   let description: String
   let releaseDate: Int
   

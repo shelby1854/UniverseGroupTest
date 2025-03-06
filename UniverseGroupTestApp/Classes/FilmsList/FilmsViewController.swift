@@ -45,8 +45,25 @@ final class FilmsViewController: UIViewController {
     return button
   }()
   
+  private lazy var randomizeTitleButton: UIBarButtonItem = {
+    let button = UIBarButtonItem(
+      image: UIImage(systemName: "questionmark.circle.dashed"),
+      style: .plain,
+      target: nil,
+      action: nil
+    )
+    return button
+  }()
+
   private var dataSource: RxTableViewSectionedAnimatedDataSource<FilmSection> {
+    let animationConfiguration = AnimationConfiguration(
+      insertAnimation: .right,
+      reloadAnimation: .fade,
+      deleteAnimation: .left
+    )
+    
     let dataSource = RxTableViewSectionedAnimatedDataSource<FilmSection>(
+      animationConfiguration: animationConfiguration,
       configureCell: { [weak self] _, tableView, indexPath, film in
         guard let self else { return UITableViewCell() }
         let cell = tableView.dequeueReusableCell(
@@ -93,7 +110,7 @@ final class FilmsViewController: UIViewController {
     tableView.snp.makeConstraints { make in
       make.edges.equalToSuperview()
     }
-    navigationItem.rightBarButtonItems = [sortButton]
+    navigationItem.rightBarButtonItems = [randomizeTitleButton, sortButton]
   }
   
   private func setupBindings() {
@@ -121,6 +138,10 @@ final class FilmsViewController: UIViewController {
       .bind(to: viewModel.input.toogleSort)
       .disposed(by: disposeBag)
     
+    randomizeTitleButton.rx.tap
+      .bind(to: viewModel.input.randomizeTitle)
+      .disposed(by: disposeBag)
+    
     Observable
       .combineLatest(
         viewModel.output.sections,
@@ -136,9 +157,9 @@ final class FilmsViewController: UIViewController {
         let (newSections, newSelected) = newState
         
         if newSelected.isEmpty {
-          self.navigationItem.rightBarButtonItems = [self.sortButton]
+          self.navigationItem.rightBarButtonItems = [self.randomizeTitleButton, self.sortButton]
         } else {
-          self.navigationItem.rightBarButtonItems = [self.sortButton, self.addSelectedButton]
+          self.navigationItem.rightBarButtonItems = [self.randomizeTitleButton, self.sortButton, self.addSelectedButton]
         }
         
         let oldSelectedIds = Set(oldSelected.map { $0.id })
