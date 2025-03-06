@@ -26,14 +26,6 @@ struct FilmBO {
 
 extension FilmBO: IdentifiableItem {
   var identity: UUID { id }
-  
-  static func == (lhs: FilmBO, rhs: FilmBO) -> Bool {
-    return lhs.id == rhs.id
-    && lhs.title == rhs.title
-    && lhs.description == rhs.description
-    && lhs.releaseDate == rhs.releaseDate
-    && lhs.isFavorite == rhs.isFavorite
-  }
 }
 
 extension FilmBO {

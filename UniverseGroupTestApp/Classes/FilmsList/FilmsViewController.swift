@@ -45,7 +45,7 @@ final class FilmsViewController: UIViewController {
     return button
   }()
   
-  private lazy var dataSource: RxTableViewSectionedAnimatedDataSource<FilmSection> = {
+  private var dataSource: RxTableViewSectionedAnimatedDataSource<FilmSection> {
     let dataSource = RxTableViewSectionedAnimatedDataSource<FilmSection>(
       configureCell: { [weak self] _, tableView, indexPath, film in
         guard let self else { return UITableViewCell() }
@@ -65,7 +65,7 @@ final class FilmsViewController: UIViewController {
       }
     )
     return dataSource
-  }()
+  }
   
   // MARK: - Init
   init(viewModel: FilmsViewModel) {
